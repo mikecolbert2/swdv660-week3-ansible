@@ -16,18 +16,37 @@
       - nodejs
       - npm
 
-  - name: copying the application file
+  - name: installing MySQL
+    become: yes
+    yum:
+      enablerepo: epel
+      state: present
+      name:
+      - mysql-server
+      update_cache: yes
+
+  - name: download current application file from from Github to Ansible node
+    get_url:
+      url: https://raw.githubusercontent.com/mikecolbert2/swdv660-week3-ansible/master/helloworld.js
+      dest: ./helloworld.js
+
+  - name: download current config file from from Github to Ansible node
+    get_url:
+      url: https://raw.githubusercontent.com/mikecolbert2/swdv660-week3-ansible/master/helloworld.conf
+      dest: ./helloworld.conf
+
+  - name: copy application file from the Ansible node to the hosts
     copy:
-      src: /home/ec2-user/swdv660/helloworld.js
+      src: helloworld.js
       dest: /home/ec2-user/helloworld.js
       owner: ec2-user
       group: ec2-user
       mode: 0644
 
-  - name: copying the upstart file      
+  - name: copy configuration file from the Ansible node to the hosts      
     become: yes
     copy:
-      src: /home/ec2-user/swdv660/helloworld.conf
+      src: helloworld.conf
       dest: /etc/init/helloworld.conf
       owner: root
       group: root
